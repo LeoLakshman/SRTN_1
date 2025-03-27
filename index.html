@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRTN Scheduling Simulation</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>SRTN Scheduling Simulation</h1>
+
+    <div class="input-section">
+        <label for="num_cpus">Number of CPUs:</label>
+        <input type="number" id="num_cpus" value="2" min="1">
+
+        <label for="num_jobs">Number of Jobs:</label>
+        <input type="number" id="num_jobs" value="4" min="1">
+
+        <button id="generate_jobs">Generate Job Inputs</button>
+    </div>
+
+    <div id="job_inputs">
+        </div>
+
+    <div class="input-section">
+        <label for="quantum_constant">Quantum Constant:</label>
+        <input type="number" id="quantum_constant" value="4" min="1">
+        <button id="start_simulation">Start Simulation</button>
+    </div>
+
+    <div class="results-section">
+        <h2>Simulation Results</h2>
+        <div id="turnaround_times"></div>
+        <div id="average_turnaround_time"></div>
+        <h2>CPU Timeline</h2>
+        <div id="cpu_timeline_chart"></div>
+        <h2>Ready Queue History</h2>
+        <div id="queue_history"></div>
+        <h2>Completed Stack</h2>
+        <div id="completed_stack"></div>
+        <div id="empty_stack_message" style="display:none;"><h3>Simulation Ended (Empty Stack)</h3></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
