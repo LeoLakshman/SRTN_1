@@ -4,66 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SRTN and Round Robin Job Scheduling Calculator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
+            background-color: #f8f9fa;
         }
         .container {
-            max-width: 1200px;
-            margin: 0 auto;
+            margin-top: 30px;
             background-color: white;
             padding: 20px;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: inline-block;
-            width: 150px;
-            font-weight: bold;
-        }
-        input[type="number"] {
-            width: 80px;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 15px;
-            margin-right: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
         #ganttChart {
             margin-top: 30px;
@@ -88,7 +40,7 @@
             border-radius: 4px;
         }
         .idle-block {
-            background-color: transparent;
+            background-color: #e9ecef;
         }
         .time-axis {
             position: relative;
@@ -159,27 +111,28 @@
 </head>
 <body>
     <div class="container">
-        <h1>SRTN and Round Robin Job Scheduling Calculator</h1>
+        <h1 class="text-center">SRTN and Round Robin Job Scheduling Calculator</h1>
         
-        <div class="input-group">
-            <label for="cpuCount">Number of CPUs:</label>
-            <input type="number" id="cpuCount" value="3" min="1">
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <label for="cpuCount" class="form-label">Number of CPUs:</label>
+                <input type="number" id="cpuCount" class="form-control" value="3" min="1">
+            </div>
+            <div class="col-md-6">
+                <label for="timeQuantum" class="form-label">Time Quantum:</label>
+                <input type="number" id="timeQuantum" class="form-control" value="2" min="0.1" step="0.1">
+            </div>
         </div>
         
-        <div class="input-group">
-            <label for="timeQuantum">Time Quantum:</label>
-            <input type="number" id="timeQuantum" value="2" min="0.1" step="0.1">
+        <div class="d-flex justify-content-center mb-3">
+            <button class="btn btn-primary me-2" onclick="addJob()">Add Job</button>
+            <button class="btn btn-danger me-2" onclick="removeLastJob()">Remove Last Job</button>
+            <button class="btn btn-success me-2" onclick="calculateSRTN()">Calculate SRTN</button>
+            <button class="btn btn-warning" onclick="calculateRoundRobin()">Calculate Round Robin</button>
         </div>
         
-        <div>
-            <button onclick="addJob()">Add Job</button>
-            <button onclick="removeLastJob()">Remove Last Job</button>
-            <button onclick="calculateSRTN()">Calculate SRTN</button>
-            <button onclick="calculateRoundRobin()">Calculate Round Robin</button>
-        </div>
-        
-        <table id="jobTable">
-            <thead>
+        <table class="table table-bordered">
+            <thead class="table-light">
                 <tr>
                     <th>#Jobs</th>
                     <th>Arrival Time</th>
@@ -189,16 +142,18 @@
                     <th>Turnaround Time</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="jobTable"></tbody>
         </table>
         
-        <div id="averageTurnaroundTime"></div>
+        <div id="averageTurnaroundTime" class="text-center"></div>
         
         <div id="ganttChartContainer">
             <div id="ganttChart"></div>
         </div>
     </div>
 
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let jobs = [];
         const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F67280', '#C06C84'];
@@ -226,17 +181,18 @@
         }
 
         function updateJobTable() {
-            const tableBody = document.querySelector("#jobTable tbody");
+            const tableBody = document.querySelector("#jobTable");
             tableBody.innerHTML = '';
             jobs.forEach((job, index) => {
-                const row = tableBody.insertRow();
-                row.innerHTML = 
-                    `<td>J${job.id}</td>
-                    <td><input type="number" step="0.1" value="${job.arrivalTime}" min="0" onchange="updateJobProperty(${index}, 'arrivalTime', this.value)"></td>
-                    <td><input type="number" step="0.1" value="${job.burstTime}" min="0.1" onchange="updateJobProperty(${index}, 'burstTime', this.value)"></td>
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>J${job.id}</td>
+                    <td><input type="number" class="form-control" step="0.1" value="${job.arrivalTime}" min="0" onchange="updateJobProperty(${index}, 'arrivalTime', this.value)"></td>
+                    <td><input type="number" class="form-control" step="0.1" value="${job.burstTime}" min="0.1" onchange="updateJobProperty(${index}, 'burstTime', this.value)"></td>
                     <td>${job.startTime === -1 ? '-' : job.startTime.toFixed(1)}</td>
                     <td>${job.endTime.toFixed(1)}</td>
                     <td>${job.turnaroundTime.toFixed(1)}</td>`;
+                tableBody.appendChild(row);
             });
         }
 
@@ -248,67 +204,72 @@
         }
 
         function calculateSRTN() {
-            console.log("SRTN calculation started");
+            // Logic for SRTN scheduling
             const cpuCount = parseInt(document.getElementById("cpuCount").value);
-            const timeQuantum = parseFloat(document.getElementById("timeQuantum").value);
-
-            // Reset job states
+            const timeQuantum = parseInt(document.getElementById("timeQuantum").value);
+            
             jobs.forEach(job => {
                 job.remainingTime = job.burstTime;
-                job.startTime = -1.0;
-                job.endTime = 0.0;
-                job.turnaroundTime = 0.0;
-                job.lastExecutionTime = -1.0;
+                job.startTime = -1;
+                job.endTime = 0;
+                job.turnaroundTime = 0;
+                job.lastExecutionTime = -1;
             });
 
-            let currentTime = 0.0;
+            let currentTime = 0;
             let completedJobs = 0;
             let runningJobs = new Array(cpuCount).fill(null);
             let jobHistory = [];
             let jobQueueHistory = [];
 
             while (completedJobs < jobs.length) {
-                let availableJobs = jobs.filter(job =>
-                    job.arrivalTime <= currentTime &&
+                // Get all available jobs, including those currently running that need to be considered
+                let availableJobs = jobs.filter(job => 
+                    job.arrivalTime <= currentTime && 
                     job.remainingTime > 0
                 ).sort((a, b) => a.remainingTime - b.remainingTime || a.arrivalTime - b.arrivalTime);
 
-                if (Math.floor(currentTime / timeQuantum) === currentTime / timeQuantum) {
-                    jobQueueHistory.push({
-                        time: currentTime,
-                        jobs: availableJobs.map(job => ({
+                if (currentTime % timeQuantum === 0) {
+                    // Store queue state for visualization
+                    jobQueueHistory.push({ 
+                        time: currentTime, 
+                        jobs: availableJobs.filter(job => 
+                            !runningJobs.some(rj => rj && rj.id === job.id)
+                        ).map(job => ({
                             id: job.id,
                             remainingTime: job.remainingTime
                         }))
                     });
 
+                    // Reassign CPUs based on shortest remaining time
                     runningJobs = runningJobs.map(() => null);
                     for (let i = 0; i < Math.min(cpuCount, availableJobs.length); i++) {
                         let job = availableJobs[i];
-                        if (job.startTime === -1.0) {
+                        if (job.startTime === -1) {
                             job.startTime = currentTime;
                         }
-                        runningJobs[i] = { id: job.id, allocatedTime: 0.0 };
+                        runningJobs[i] = { id: job.id, allocatedTime: 0 };
                     }
                 }
 
+                // Process each CPU
                 for (let i = 0; i < cpuCount; i++) {
                     if (runningJobs[i] !== null) {
                         let runningJob = runningJobs[i];
                         let job = jobs.find(j => j.id === runningJob.id);
-
-                        job.remainingTime -= 0.1;
-                        runningJob.allocatedTime += 0.1;
+                        
+                        job.remainingTime--;
+                        runningJob.allocatedTime++;
 
                         jobHistory.push({
                             jobId: job.id,
                             cpuId: i,
                             startTime: currentTime,
-                            endTime: currentTime + 0.1
+                            endTime: currentTime + 1
                         });
 
-                        if (job.remainingTime <= 0) {
-                            job.endTime = currentTime + 0.1;
+                        if (job.remainingTime === 0) {
+                            job.endTime = currentTime + 1;
                             job.turnaroundTime = job.endTime - job.arrivalTime;
                             completedJobs++;
                             runningJobs[i] = null;
@@ -318,34 +279,34 @@
                             jobId: 'idle',
                             cpuId: i,
                             startTime: currentTime,
-                            endTime: currentTime + 0.1
+                            endTime: currentTime + 1
                         });
                     }
                 }
 
-                currentTime += 0.1;
+                currentTime++;
             }
 
             updateJobTable();
             calculateAverageTurnaroundTime();
             drawGanttChart(jobHistory, jobQueueHistory);
-            console.log("SRTN calculation completed");
         }
 
         function calculateRoundRobin() {
-            console.log("Round Robin calculation started");
+            // Logic for Round Robin scheduling
             const cpuCount = parseInt(document.getElementById("cpuCount").value);
-            const timeQuantum = parseFloat(document.getElementById("timeQuantum").value);
-
+            const timeQuantum = parseInt(document.getElementById("timeQuantum").value);
+            
+            // Reset job states
             jobs.forEach(job => {
                 job.remainingTime = job.burstTime;
-                job.startTime = -1.0;
-                job.endTime = 0.0;
-                job.turnaroundTime = 0.0;
-                job.lastExecutionTime = -1.0;
+                job.startTime = -1;
+                job.endTime = 0;
+                job.turnaroundTime = 0;
+                job.lastExecutionTime = -1;
             });
 
-            let currentTime = 0.0;
+            let currentTime = 0;
             let completedJobs = 0;
             let runningJobs = new Array(cpuCount).fill(null);
             let jobQueue = [];
@@ -353,13 +314,15 @@
             let jobQueueHistory = [];
 
             while (completedJobs < jobs.length) {
+                // Check for new arrivals
                 jobs.forEach(job => {
                     if (job.arrivalTime === currentTime && !jobQueue.includes(job) && job.remainingTime > 0) {
                         jobQueue.push(job);
                     }
                 });
 
-                if (Math.floor(currentTime / timeQuantum) === currentTime / timeQuantum) {
+                if (currentTime % timeQuantum === 0) {
+                    // Return running jobs to queue if they're not finished
                     runningJobs.forEach((runningJob, index) => {
                         if (runningJob !== null) {
                             let job = jobs.find(j => j.id === runningJob.id);
@@ -370,6 +333,7 @@
                         }
                     });
 
+                    // Record queue state for visualization
                     jobQueueHistory.push({
                         time: currentTime,
                         jobs: jobQueue.map(job => ({
@@ -378,34 +342,36 @@
                         }))
                     });
 
+                    // Assign jobs to available CPUs
                     for (let i = 0; i < cpuCount && jobQueue.length > 0; i++) {
                         if (runningJobs[i] === null) {
                             let job = jobQueue.shift();
-                            if (job.startTime === -1.0) {
+                            if (job.startTime === -1) {
                                 job.startTime = currentTime;
                             }
-                            runningJobs[i] = { id: job.id, allocatedTime: 0.0 };
+                            runningJobs[i] = { id: job.id, allocatedTime: 0 };
                         }
                     }
                 }
 
+                // Process each CPU
                 for (let i = 0; i < cpuCount; i++) {
                     if (runningJobs[i] !== null) {
                         let runningJob = runningJobs[i];
                         let job = jobs.find(j => j.id === runningJob.id);
-
-                        job.remainingTime -= 0.1;
-                        runningJob.allocatedTime += 0.1;
+                        
+                        job.remainingTime--;
+                        runningJob.allocatedTime++;
 
                         jobHistory.push({
                             jobId: job.id,
                             cpuId: i,
                             startTime: currentTime,
-                            endTime: currentTime + 0.1
+                            endTime: currentTime + 1
                         });
 
-                        if (job.remainingTime <= 0) {
-                            job.endTime = currentTime + 0.1;
+                        if (job.remainingTime === 0) {
+                            job.endTime = currentTime + 1;
                             job.turnaroundTime = job.endTime - job.arrivalTime;
                             completedJobs++;
                             runningJobs[i] = null;
@@ -415,18 +381,17 @@
                             jobId: 'idle',
                             cpuId: i,
                             startTime: currentTime,
-                            endTime: currentTime + 0.1
+                            endTime: currentTime + 1
                         });
                     }
                 }
 
-                currentTime += 0.1;
+                currentTime++;
             }
 
             updateJobTable();
             calculateAverageTurnaroundTime();
             drawGanttChart(jobHistory, jobQueueHistory);
-            console.log("Round Robin calculation completed");
         }
 
         function calculateAverageTurnaroundTime() {
@@ -443,12 +408,14 @@
         }
 
         function drawGanttChart(jobHistory, jobQueueHistory) {
+            // Logic for drawing Gantt chart
             const ganttChart = document.getElementById("ganttChart");
             ganttChart.innerHTML = '';
 
             const maxEndTime = Math.max(...jobHistory.map(entry => entry.endTime));
-            const timeQuantum = parseFloat(document.getElementById("timeQuantum").value);
+            const timeQuantum = parseInt(document.getElementById("timeQuantum").value);
             
+            // Draw CPU rows
             for (let i = 0; i < parseInt(document.getElementById("cpuCount").value); i++) {
                 const rowDiv = document.createElement("div");
                 rowDiv.className = "cpu-row";
@@ -485,22 +452,27 @@
                 });
             }
 
+            // Add time axis
             const timeAxisDiv = document.createElement("div");
             timeAxisDiv.className = "time-axis";
             ganttChart.appendChild(timeAxisDiv);
 
+            // Add time markers and job queues at time quantum intervals
             for (let t = 0; t <= maxEndTime; t += timeQuantum) {
+                // Add time marker
                 const markerDiv = document.createElement("div");
                 markerDiv.className = "time-marker";
                 markerDiv.style.left = `${(t / maxEndTime * 100)}%`;
-                markerDiv.textContent = t.toFixed(1);
+                markerDiv.textContent = t;
                 timeAxisDiv.appendChild(markerDiv);
 
+                // Add vertical time line
                 const lineDiv = document.createElement("div");
                 lineDiv.className = "dashed-line";
                 lineDiv.style.left = `${(t / maxEndTime * 100)}%`;
                 ganttChart.appendChild(lineDiv);
 
+                // Add job queue information
                 const queueEntry = jobQueueHistory.find(entry => entry.time === t);
                 if (queueEntry) {
                     const queueDiv = document.createElement("div");
@@ -512,7 +484,7 @@
                     queueJobsDiv.className = "queue-jobs";
                     if (queueEntry.jobs.length > 0) {
                         queueJobsDiv.innerHTML = queueEntry.jobs.map(job => 
-                            `J${job.id} = ${job.remainingTime.toFixed(1)}`
+                            `J${job.id} = ${job.remainingTime}`
                         ).join('<br>');
                     } else {
                         queueJobsDiv.innerHTML = "{ }";
@@ -522,559 +494,41 @@
                 }
             }
 
+            // Add job arrival markers
             jobs.forEach(job => {
                 if (job.arrivalTime > 0 && job.arrivalTime <= maxEndTime) {
+                    // Add job name marker
                     const arrivalNameDiv = document.createElement("div");
                     arrivalNameDiv.className = "job-arrival-name";
-<!-- filepath: c:\Users\Leo\Desktop\Workspace for VS\Page\index.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SRTN and Round Robin Job Scheduling Calculator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f0f0f0;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .input-group {
-            margin-bottom: 15px;
-        }
-        label {
-            display: inline-block;
-            width: 150px;
-            font-weight: bold;
-        }
-        input[type="number"] {
-            width: 80px;
-            padding: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            padding: 10px 15px;
-            margin-right: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        #ganttChart {
-            margin-top: 30px;
-            position: relative;
-            padding: 10px 0;
-        }
-        .cpu-row {
-            height: 40px;
-            margin-bottom: 10px;
-            position: relative;
-            display: flex;
-            flex-wrap: nowrap;
-        }
-        .job-block {
-            position: relative;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            border-radius: 4px;
-        }
-        .idle-block {
-            background-color: transparent;
-        }
-        .time-axis {
-            position: relative;
-            height: 60px;
-            margin-top: 40px;
-            border-top: 2px solid #333;
-        }
-        .time-marker {
-            position: absolute;
-            font-size: 12px;
-            top: -20px;
-            text-align: center;
-        }
-        .dashed-line {
-            position: absolute;
-            height: 100%;
-            width: 1px;
-            background-color: #999;
-            border-left: 1px dashed #000;
-            top: 0;
-        }
-        .arrival-line {
-            position: absolute;
-            height: 100%;
-            width: 0.5px;
-            background-color: #ccc;
-            border-left: 1px dashed #666;
-            top: 0;
-        }
-        #averageTurnaroundTime {
-            margin-top: 20px;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .queue-container {
-            position: absolute;
-            font-size: 14px;
-            text-align: left;
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 1px solid #000;
-            border-radius: 4px;
-            padding: 5px;
-            z-index: 10;
-            font-weight: bold;
-        }
-        .queue-jobs {
-            font-style: italic;
-        }
-        .job-arrival {
-            position: absolute;
-            font-size: 12px;
-            text-align: center;
-            top: -20px;
-        }
-        .job-arrival-name {
-            position: absolute;
-            font-size: 12px;
-            text-align: center;
-            top: -35px;
-            font-weight: bold;
-        }
-        #ganttChartContainer {
-            position: relative;
-            overflow-x: auto;
-            padding-bottom: 100px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>SRTN and Round Robin Job Scheduling Calculator</h1>
-        
-        <div class="input-group">
-            <label for="cpuCount">Number of CPUs:</label>
-            <input type="number" id="cpuCount" value="3" min="1">
-        </div>
-        
-        <div class="input-group">
-            <label for="timeQuantum">Time Quantum:</label>
-            <input type="number" id="timeQuantum" value="2" min="0.1" step="0.1">
-        </div>
-        
-        <div>
-            <button onclick="addJob()">Add Job</button>
-            <button onclick="removeLastJob()">Remove Last Job</button>
-            <button onclick="calculateSRTN()">Calculate SRTN</button>
-            <button onclick="calculateRoundRobin()">Calculate Round Robin</button>
-        </div>
-        
-        <table id="jobTable">
-            <thead>
-                <tr>
-                    <th>#Jobs</th>
-                    <th>Arrival Time</th>
-                    <th>Burst Time</th>
-                    <th>Start Time</th>
-                    <th>End Time</th>
-                    <th>Turnaround Time</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        
-        <div id="averageTurnaroundTime"></div>
-        
-        <div id="ganttChartContainer">
-            <div id="ganttChart"></div>
-        </div>
-    </div>
+                    arrivalNameDiv.style.left = `${(job.arrivalTime / maxEndTime * 100)}%`;
+                    arrivalNameDiv.textContent = `J${job.id}`;
+                    timeAxisDiv.appendChild(arrivalNameDiv);
 
-    <script>
-        let jobs = [];
-        const colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F67280', '#C06C84'];
+                    // Add arrival time marker
+                    const arrivalTimeDiv = document.createElement("div");
+                    arrivalTimeDiv.className = "job-arrival";
+                    arrivalTimeDiv.style.left = `${(job.arrivalTime / maxEndTime * 100)}%`;
+                    arrivalTimeDiv.textContent = job.arrivalTime;
+                    timeAxisDiv.appendChild(arrivalTimeDiv);
 
-        function addJob() {
-            const newJob = {
-                id: jobs.length + 1,
-                arrivalTime: 0.0,
-                burstTime: 0.0,
-                remainingTime: 0.0,
-                startTime: -1.0,
-                endTime: 0.0,
-                turnaroundTime: 0.0,
-                lastExecutionTime: -1.0
-            };
-            jobs.push(newJob);
-            updateJobTable();
-        }
-
-        function removeLastJob() {
-            if (jobs.length > 0) {
-                jobs.pop();
-                updateJobTable();
-            }
-        }
-
-        function updateJobTable() {
-            const tableBody = document.querySelector("#jobTable tbody");
-            tableBody.innerHTML = '';
-            jobs.forEach((job, index) => {
-                const row = tableBody.insertRow();
-                row.innerHTML = 
-                    `<td>J${job.id}</td>
-                    <td><input type="number" step="0.1" value="${job.arrivalTime}" min="0" onchange="updateJobProperty(${index}, 'arrivalTime', this.value)"></td>
-                    <td><input type="number" step="0.1" value="${job.burstTime}" min="0.1" onchange="updateJobProperty(${index}, 'burstTime', this.value)"></td>
-                    <td>${job.startTime === -1 ? '-' : job.startTime.toFixed(1)}</td>
-                    <td>${job.endTime.toFixed(1)}</td>
-                    <td>${job.turnaroundTime.toFixed(1)}</td>`;
-            });
-        }
-
-        function updateJobProperty(index, property, value) {
-            jobs[index][property] = parseFloat(value);
-            if (property === 'burstTime') {
-                jobs[index].remainingTime = parseFloat(value);
-            }
-        }
-
-        function calculateSRTN() {
-            console.log("SRTN calculation started");
-            const cpuCount = parseInt(document.getElementById("cpuCount").value);
-            const timeQuantum = parseFloat(document.getElementById("timeQuantum").value);
-
-            // Reset job states
-            jobs.forEach(job => {
-                job.remainingTime = job.burstTime;
-                job.startTime = -1.0;
-                job.endTime = 0.0;
-                job.turnaroundTime = 0.0;
-                job.lastExecutionTime = -1.0;
+                    // Add arrival vertical line
+                    const arrivalLineDiv = document.createElement("div");
+                    arrivalLineDiv.className = "arrival-line";
+                    arrivalLineDiv.style.left = `${(job.arrivalTime / maxEndTime * 100)}%`;
+                    ganttChart.appendChild(arrivalLineDiv);
+                }
             });
 
-            let currentTime = 0.0;
-            let completedJobs = 0;
-            let runningJobs = new Array(cpuCount).fill(null);
-            let jobHistory = [];
-            let jobQueueHistory = [];
-
-            while (completedJobs < jobs.length) {
-                let availableJobs = jobs.filter(job =>
-                    job.arrivalTime <= currentTime &&
-                    job.remainingTime > 0
-                ).sort((a, b) => a.remainingTime - b.remainingTime || a.arrivalTime - b.arrivalTime);
-
-                if (Math.floor(currentTime / timeQuantum) === currentTime / timeQuantum) {
-                    jobQueueHistory.push({
-                        time: currentTime,
-                        jobs: availableJobs.map(job => ({
-                            id: job.id,
-                            remainingTime: job.remainingTime
-                        }))
-                    });
-
-                    runningJobs = runningJobs.map(() => null);
-                    for (let i = 0; i < Math.min(cpuCount, availableJobs.length); i++) {
-                        let job = availableJobs[i];
-                        if (job.startTime === -1.0) {
-                            job.startTime = currentTime;
-                        }
-                        runningJobs[i] = { id: job.id, allocatedTime: 0.0 };
-                    }
-                }
-
-                for (let i = 0; i < cpuCount; i++) {
-                    if (runningJobs[i] !== null) {
-                        let runningJob = runningJobs[i];
-                        let job = jobs.find(j => j.id === runningJob.id);
-
-                        job.remainingTime -= 0.1;
-                        runningJob.allocatedTime += 0.1;
-
-                        jobHistory.push({
-                            jobId: job.id,
-                            cpuId: i,
-                            startTime: currentTime,
-                            endTime: currentTime + 0.1
-                        });
-
-                        if (job.remainingTime <= 0) {
-                            job.endTime = currentTime + 0.1;
-                            job.turnaroundTime = job.endTime - job.arrivalTime;
-                            completedJobs++;
-                            runningJobs[i] = null;
-                        }
-                    } else {
-                        jobHistory.push({
-                            jobId: 'idle',
-                            cpuId: i,
-                            startTime: currentTime,
-                            endTime: currentTime + 0.1
-                        });
-                    }
-                }
-
-                currentTime += 0.1;
-            }
-
-            updateJobTable();
-            calculateAverageTurnaroundTime();
-            drawGanttChart(jobHistory, jobQueueHistory);
-            console.log("SRTN calculation completed");
+            // Adjust container height
+            const containerHeight = ganttChart.offsetHeight + 100;
+            document.getElementById('ganttChartContainer').style.height = `${containerHeight}px`;
         }
 
-        function calculateRoundRobin() {
-            console.log("Round Robin calculation started");
-            const cpuCount = parseInt(document.getElementById("cpuCount").value);
-            const timeQuantum = parseFloat(document.getElementById("timeQuantum").value);
-
-            jobs.forEach(job => {
-                job.remainingTime = job.burstTime;
-                job.startTime = -1.0;
-                job.endTime = 0.0;
-                job.turnaroundTime = 0.0;
-                job.lastExecutionTime = -1.0;
-            });
-
-            let currentTime = 0.0;
-            let completedJobs = 0;
-            let runningJobs = new Array(cpuCount).fill(null);
-            let jobQueue = [];
-            let jobHistory = [];
-            let jobQueueHistory = [];
-
-            while (completedJobs < jobs.length) {
-                jobs.forEach(job => {
-                    if (job.arrivalTime === currentTime && !jobQueue.includes(job) && job.remainingTime > 0) {
-                        jobQueue.push(job);
-                    }
-                });
-
-                if (Math.floor(currentTime / timeQuantum) === currentTime / timeQuantum) {
-                    runningJobs.forEach((runningJob, index) => {
-                        if (runningJob !== null) {
-                            let job = jobs.find(j => j.id === runningJob.id);
-                            if (job.remainingTime > 0) {
-                                jobQueue.push(job);
-                            }
-                            runningJobs[index] = null;
-                        }
-                    });
-
-                    jobQueueHistory.push({
-                        time: currentTime,
-                        jobs: jobQueue.map(job => ({
-                            id: job.id,
-                            remainingTime: job.remainingTime
-                        }))
-                    });
-
-                    for (let i = 0; i < cpuCount && jobQueue.length > 0; i++) {
-                        if (runningJobs[i] === null) {
-                            let job = jobQueue.shift();
-                            if (job.startTime === -1.0) {
-                                job.startTime = currentTime;
-                            }
-                            runningJobs[i] = { id: job.id, allocatedTime: 0.0 };
-                        }
-                    }
-                }
-
-                for (let i = 0; i < cpuCount; i++) {
-                    if (runningJobs[i] !== null) {
-                        let runningJob = runningJobs[i];
-                        let job = jobs.find(j => j.id === runningJob.id);
-
-                        job.remainingTime -= 0.1;
-                        runningJob.allocatedTime += 0.1;
-
-                        jobHistory.push({
-                            jobId: job.id,
-                            cpuId: i,
-                            startTime: currentTime,
-                            endTime: currentTime + 0.1
-                        });
-
-                        if (job.remainingTime <= 0) {
-                            job.endTime = currentTime + 0.1;
-                            job.turnaroundTime = job.endTime - job.arrivalTime;
-                            completedJobs++;
-                            runningJobs[i] = null;
-                        }
-                    } else {
-                        jobHistory.push({
-                            jobId: 'idle',
-                            cpuId: i,
-                            startTime: currentTime,
-                            endTime: currentTime + 0.1
-                        });
-                    }
-                }
-
-                currentTime += 0.1;
-            }
-
-            updateJobTable();
-            calculateAverageTurnaroundTime();
-            drawGanttChart(jobHistory, jobQueueHistory);
-            console.log("Round Robin calculation completed");
-        }
-
-        function calculateAverageTurnaroundTime() {
-            const turnaroundTimes = jobs.map(job => job.turnaroundTime);
-            const totalTurnaroundTime = turnaroundTimes.reduce((sum, time) => sum + time, 0.0);
-            const averageTurnaroundTime = totalTurnaroundTime / jobs.length;
-            
-            const calculation = turnaroundTimes.map(t => t.toFixed(1)).join(' + ');
-            const result = averageTurnaroundTime.toFixed(2);
-            
-            document.getElementById("averageTurnaroundTime").innerHTML = `
-                Average Turnaround Time: (${calculation}) / ${jobs.length} = <b>${result}</b>
-            `;
-        }
-
-        function drawGanttChart(jobHistory, jobQueueHistory) {
-            const ganttChart = document.getElementById("ganttChart");
-            ganttChart.innerHTML = '';
-
-            const maxEndTime = Math.max(...jobHistory.map(entry => entry.endTime));
-            const timeQuantum = parseFloat(document.getElementById("timeQuantum").value);
-            
-            for (let i = 0; i < parseInt(document.getElementById("cpuCount").value); i++) {
-                const rowDiv = document.createElement("div");
-                rowDiv.className = "cpu-row";
-                ganttChart.appendChild(rowDiv);
-                
-                let currentJobId = null;
-                let currentBlock = null;
-                let blockStartTime = null;
-                
-                jobHistory.filter(entry => entry.cpuId === i).forEach((entry, index) => {
-                    if (entry.jobId !== currentJobId) {
-                        if (currentBlock) {
-                            currentBlock.style.width = `${(entry.startTime - blockStartTime) / maxEndTime * 100}%`;
-                            rowDiv.appendChild(currentBlock);
-                        }
-
-                        currentJobId = entry.jobId;
-                        blockStartTime = entry.startTime;
-                        
-                        currentBlock = document.createElement("div");
-                        currentBlock.className = "job-block";
-                        if (entry.jobId === 'idle') {
-                            currentBlock.classList.add('idle-block');
-                        } else {
-                            currentBlock.style.backgroundColor = colors[(entry.jobId - 1) % colors.length];
-                            currentBlock.textContent = `J${entry.jobId}`;
-                        }
-                    }
-
-                    if (index === jobHistory.filter(e => e.cpuId === i).length - 1) {
-                        currentBlock.style.width = `${(entry.endTime - blockStartTime) / maxEndTime * 100}%`;
-                        rowDiv.appendChild(currentBlock);
-                    }
-                });
-            }
-
-            const timeAxisDiv = document.createElement("div");
-            timeAxisDiv.className = "time-axis";
-            ganttChart.appendChild(timeAxisDiv);
-
-            for (let t = 0; t <= maxEndTime; t += timeQuantum) {
-                const markerDiv = document.createElement("div");
-                markerDiv.className = "time-marker";
-                markerDiv.style.left = `${(t / maxEndTime * 100)}%`;
-                markerDiv.textContent = t.toFixed(1);
-                timeAxisDiv.appendChild(markerDiv);
-
-                const lineDiv = document.createElement("div");
-                lineDiv.className = "dashed-line";
-                lineDiv.style.left = `${(t / maxEndTime * 100)}%`;
-                ganttChart.appendChild(lineDiv);
-
-                const queueEntry = jobQueueHistory.find(entry => entry.time === t);
-                if (queueEntry) {
-                    const queueDiv = document.createElement("div");
-                    queueDiv.className = "queue-container";
-                    queueDiv.style.left = `${(t / maxEndTime * 100)}%`;
-                    queueDiv.style.top = `${timeAxisDiv.offsetTop + 60}px`;
-
-                    const queueJobsDiv = document.createElement("div");
-                    queueJobsDiv.className = "queue-jobs";
-                    if (queueEntry.jobs.length > 0) {
-                        queueJobsDiv.innerHTML = queueEntry.jobs.map(job => 
-                            `J${job.id} = ${job.remainingTime.toFixed(1)}`
-                        ).join('<br>');
-                    } else {
-                        queueJobsDiv.innerHTML = "{ }";
-                    }
-                    queueDiv.appendChild(queueJobsDiv);
-                    ganttChart.appendChild(queueDiv);
-                }
-            }
-
-            jobs.forEach(job => {
-    if (job.arrivalTime > 0 && job.arrivalTime <= maxEndTime) {
-        // Add job name marker
-        const arrivalNameDiv = document.createElement("div");
-        arrivalNameDiv.className = "job-arrival-name";
-        arrivalNameDiv.style.left = `${(job.arrivalTime / maxEndTime) * 100}%`;
-        arrivalNameDiv.textContent = `J${job.id}`;
-        timeAxisDiv.appendChild(arrivalNameDiv);
-
-        // Add arrival time marker
-        const arrivalTimeDiv = document.createElement("div");
-        arrivalTimeDiv.className = "job-arrival";
-        arrivalTimeDiv.style.left = `${(job.arrivalTime / maxEndTime) * 100}%`;
-        arrivalTimeDiv.textContent = job.arrivalTime.toFixed(1);
-        timeAxisDiv.appendChild(arrivalTimeDiv);
-
-        // Add arrival vertical line
-        const arrivalLineDiv = document.createElement("div");
-        arrivalLineDiv.className = "arrival-line";
-        arrivalLineDiv.style.left = `${(job.arrivalTime / maxEndTime) * 100}%`;
-        ganttChart.appendChild(arrivalLineDiv);
-    }
-});
-
+        // Initialize with sample jobs
+        addJob();
+        addJob();
+        addJob();
+        updateJobTable();
     </script>
 </body>
 </html>
