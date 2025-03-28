@@ -1,66 +1,101 @@
+/* style.css */
 body {
-    font-family: sans-serif;
-    margin: 20px;
-    background-color: #f4f4f4;
+    background-color: #f8f9fa;
 }
-
-h1, h2 {
-    color: #333;
+.container {
+    margin-top: 30px;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+#ganttChart {
+    margin-top: 30px;
+    position: relative;
+    padding: 10px 0;
+}
+.cpu-row {
+    height: 40px;
+    margin-bottom: 10px;
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+}
+.job-block {
+    position: relative;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+}
+.idle-block {
+    background-color: #e9ecef;
+}
+.time-axis {
+    position: relative;
+    height: 60px;
+    margin-top: 40px;
+    border-top: 2px solid #333;
+}
+.time-marker {
+    position: absolute;
+    font-size: 12px;
+    top: -20px;
     text-align: center;
 }
-
-.input-section, .results-section {
-    background-color: #fff;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.dashed-line {
+    position: absolute;
+    height: 100%;
+    width: 1px;
+    background-color: #999;
+    border-left: 1px dashed #000;
+    top: 0;
 }
-
-label {
-    display: block;
-    margin-bottom: 5px;
+.arrival-line {
+    position: absolute;
+    height: 100%;
+    width: 0.5px;
+    background-color: #ccc;
+    border-left: 1px dashed #666;
+    top: 0;
+}
+#averageTurnaroundTime {
+    margin-top: 20px;
+    font-weight: bold;
+    font-size: 18px;
+}
+.queue-container {
+    position: absolute;
+    font-size: 14px;
+    text-align: left;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #000;
+    border-radius: 4px;
+    padding: 5px;
+    z-index: 10;
     font-weight: bold;
 }
-
-input[type="number"] {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
+.queue-jobs {
+    font-style: italic;
 }
-
-button {
-    background-color: #5cb85c;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-    margin-top: 10px;
+.job-arrival {
+    position: absolute;
+    font-size: 12px;
+    text-align: center;
+    top: -20px;
 }
-
-button:hover {
-    background-color: #4cae4c;
+.job-arrival-name {
+    position: absolute;
+    font-size: 12px;
+    text-align: center;
+    top: -35px;
+    font-weight: bold;
 }
-
-#job_inputs > div {
-    margin-bottom: 15px;
-    padding: 10px;
-    border: 1px solid #eee;
-    border-radius: 4px;
-    background-color: #f9f9f9;
-}
-
-.results-section > div {
-    margin-bottom: 10px;
-}
-
-#cpu_timeline_chart {
-    width: 100%;
-    height: auto; /* Adjust as needed */
+#ganttChartContainer {
+    position: relative;
+    overflow-x: auto;
+    padding-bottom: 100px;
 }
