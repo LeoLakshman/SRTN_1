@@ -373,4 +373,3 @@
         addJob();
         addJob();
         updateJobTable();
-    </script>
