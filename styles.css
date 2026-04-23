@@ -11,7 +11,7 @@ body {
 }
 #ganttChart {
     margin-top: 30px;
-    position: relative;
+    position: relative; 
     padding: 10px 0;
 }
 .cpu-row {
